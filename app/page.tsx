@@ -4,11 +4,21 @@ import RegisterLogo from '../public/registration_image.jpg';
 import { useForm, Controller } from 'react-hook-form';
 import { CustomInput } from '../components/customInput';
 import AppLogo from '../public/app_logo.png';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { loginValidationSchema, registerValidationSchema } from '@/schema';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCountryList, loginUser, registerNewUser } from '@/redux/thunk/auth.thunk';
+import { CustomSelect } from '@/components/customSelect';
 
 const RegisterForm = ({ changeState }: { changeState: any }) => {
+  const dispatch: any = useDispatch();
+  const { countryList } = useSelector((state: any) => state.auth);
+
+  useEffect(() => {
+    dispatch(fetchCountryList());
+  }, []);
+
   const {
     control,
     handleSubmit,
@@ -17,9 +27,9 @@ const RegisterForm = ({ changeState }: { changeState: any }) => {
     resolver: yupResolver(registerValidationSchema),
   });
 
-  const onSubmit = (event: any, data: object) => {
-    event.preventDefault();
-    console.log(data);
+  const onSubmit = (data: any) => {
+    data.gender = 'MALE';
+    dispatch(registerNewUser({ payload: data }));
   };
 
   return (
@@ -95,10 +105,9 @@ const RegisterForm = ({ changeState }: { changeState: any }) => {
           control={control}
           defaultValue=""
           render={({ field }) => (
-            <CustomInput
+            <CustomSelect
+              options={countryList}
               field={field}
-              type="text"
-              placeholder="Country"
               errorMsg={errors.country ? errors.country.message : ''}
             />
           )}
@@ -109,22 +118,22 @@ const RegisterForm = ({ changeState }: { changeState: any }) => {
           className="bg-black rounded-md h-11 text-white w-[250px]"
           type="submit"
         >
-          Register
+          Next
         </button>
-        <h2></h2>
-        <span
-          className="text-gray-500 font-normal cursor-pointer"
+        <button
+          className="bg-white border-[1px] rounded-md h-11 text-black w-[250px] mt-3"
           onClick={() => changeState()}
           onKeyDown={() => changeState()}
         >
           Login
-        </span>
+        </button>
       </div>
     </form>
   );
 };
 
 const LoginForm = ({ changeState }: { changeState: any }) => {
+  const dispatch : any  = useDispatch();
   const {
     control,
     handleSubmit,
@@ -133,24 +142,23 @@ const LoginForm = ({ changeState }: { changeState: any }) => {
     resolver: yupResolver(loginValidationSchema),
   });
 
-  const onSubmit = (event: any, data: object) => {
-    event.preventDefault();
-    console.log(data);
+  const onSubmit = (data: any ) => {
+    dispatch(loginUser({ payload : data }))
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-1 gap-4">
         <Controller
-          name="email"
+          name="phoneNumber"
           control={control}
           defaultValue=""
           render={({ field }) => (
             <CustomInput
               field={field}
               type="text"
-              placeholder="Email or Phone Number"
-              errorMsg={errors.email ? errors.email.message : ''}
+              placeholder="Phone Number"
+              errorMsg={errors.phoneNumber ? errors.phoneNumber.message : ''}
             />
           )}
         />
@@ -175,14 +183,13 @@ const LoginForm = ({ changeState }: { changeState: any }) => {
         >
           Login
         </button>
-        <h2></h2>
-        <span
-          className="text-gray-500 font-normal cursor-pointer"
+        <button
+          className="bg-white border-[1px] rounded-md h-11 text-black w-[250px] mt-3"
           onClick={() => changeState()}
           onKeyDown={() => changeState()}
         >
-          Register
-        </span>
+          Create an account
+        </button>
       </div>
     </form>
   );
@@ -190,6 +197,8 @@ const LoginForm = ({ changeState }: { changeState: any }) => {
 
 export default function Home() {
   const [isLoginForm, setIsLoginForm] = useState(true);
+  const { userToken } = useSelector((state: any) => state.auth);
+
   const changeFormTab = () => {
     setIsLoginForm(!isLoginForm);
   };

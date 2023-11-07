@@ -1,18 +1,13 @@
 import './globals.css';
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import MainComponent from './mainComponent';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CommonNavbar from '@/components/navbar';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Trail Fellows',
-  description: 'This is wonderful chat app',
-};
-
-export default function RootLayout({
+export default function MainLayout({
   children,
 }: {
   children: React.ReactNode
@@ -20,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <CommonNavbar/>
         <MainComponent>{children}</MainComponent>
         <ToastContainer
           position="top-right"

@@ -2,10 +2,10 @@ import * as yup from 'yup';
 
 const loginValidationSchema: any = yup.object().shape({
   password: yup.string().required('Password is required'),
-  email: yup
+  phoneNumber: yup
     .string()
-    .email('Invalid email address')
-    .required('Email is required'),
+    // .matches(/^\d{10}$/, 'Phone number must be a 10-digit number')
+    .required('Phone number is required')
 });
 
 const registerValidationSchema = yup.object().shape({
