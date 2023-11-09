@@ -10,7 +10,9 @@ import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { setSendMessageState, setUserChat } from '@/redux/slice/chat.slice';
 import { fetchFriendList, fetchUserProfile } from '@/redux/thunk/app.thunk';
-import { log } from 'util';
+import { getChathistory } from '@/redux/thunk/chat.thunk';
+
+const URL: any = 'http://10.10.1.26:7000';
 
 export default function Home() {
   const { ischatUserSelected, selectedChatUser, currentUserChat } = useSelector(
@@ -18,12 +20,9 @@ export default function Home() {
   );
   const { userToken } = useSelector((state: any) => state.auth);
 
-  const state = useSelector((state: any) => state);
+  const { currentUserProfile } = useSelector((state: any) => state.app);
 
   const dispatch: any = useDispatch();
-
-  // "undefined" means the URL will be computed from the `window.location` object
-  const URL: any = 'http://10.10.1.26:7000';
 
   const socket = io(URL, {
     extraHeaders: {
@@ -36,7 +35,9 @@ export default function Home() {
     dispatch(fetchFriendList());
     dispatch(fetchUserProfile());
 
-    let chatArr = JSON.parse(JSON.stringify(currentUserChat));
+    let chatArr = [...currentUserChat];
+
+    // let chatArr: any = [];
 
     socket.on('connect', () => {
       console.log('SOCKET CONNECTION SUCCESSFUL');
@@ -60,22 +61,28 @@ export default function Home() {
     });
   }, []);
 
-  console.log('alll states', state);
+  useEffect(() => {
+    if (ischatUserSelected) {
+      console.log('selectedChatUser', selectedChatUser);
+      let requestId = selectedChatUser.requestId
+      dispatch(getChathistory({ requestId : requestId, limit: '10', offset: '0' }));
+    }
+  }, [ischatUserSelected]);
 
   return (
     <MainLayout>
       <div className="w-[100%] max-h-screen flex">
-        <div className="w-[15%] border-r-[1px]">
+        <div className="2xl:w-[15%] lg:w-[15%] md:w-[35%] sm:w-[35%] sm:block md:block lg:block xl:block hidden border-r-[1px]">
           <UserListing />
         </div>
-        <div className="w-[70%] border-r-[1px]">
+        <div className="2xl:w-[70%] lg:w-[70%] md:w-[65%] sm:w-[65%] w-[100%] border-r-[1px]">
           {ischatUserSelected ? (
             <UserChat socketInstance={socket} />
           ) : (
             <UserProfile />
           )}
         </div>
-        <div className="w-[15%] border-r-[1px]">
+        <div className="2xl:w-[15%] lg:w-[15%] md:w-0 sm:w-[0%] w-0 border-r-[1px] 2xl:block lg:block hidden">
           <UserSettings />
         </div>
       </div>

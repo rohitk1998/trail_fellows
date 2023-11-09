@@ -23,6 +23,7 @@ export const CustomInput: React.FC<CustomInputProps> = ({
         type={type}
         placeholder={placeholder}
         {...field}
+        autoComplete='off'
       />
       <CustomErrorText text={errorMsg} />
     </div>

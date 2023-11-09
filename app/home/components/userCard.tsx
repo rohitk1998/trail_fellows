@@ -35,7 +35,7 @@ export const UserCard = ({ item }: { item: any }) => {
   return (
     <div
       className={`w-[90%] mt-2 p-3 border-[1px] mx-auto rounded-lg ${
-        selectedChatUser.id == item.id ? 'bg-black' : ''
+        selectedChatUser.requestId == item.requestId ? 'bg-black' : ''
       }`}
       onClick={() => handleChatUserSelection(item)}
     >
@@ -56,7 +56,7 @@ export const UserCard = ({ item }: { item: any }) => {
           <div className="px-4 py-2">
             <h2
               className={`${
-                selectedChatUser.id == item.id ? 'text-white' : 'text-gray-600'
+                selectedChatUser.requestId == item.requestId ? 'text-white' : 'text-gray-600'
               } text-sm font-normal`}
             >
               {currentUserProfile.userId == item.toUserId
@@ -67,10 +67,10 @@ export const UserCard = ({ item }: { item: any }) => {
             </h2>
             <p
               className={`${
-                selectedChatUser.id == item.id ? 'text-white' : 'text-gray-600'
-              } text-sm`}
+                selectedChatUser.requestId == item.requestId ? 'text-gray-300' : 'text-gray-600'
+              } text-[12px]`}
             >
-              {item.dpStatus}
+              {item.message}
             </p>
           </div>
         </div>
